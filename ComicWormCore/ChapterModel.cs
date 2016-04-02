@@ -14,36 +14,17 @@ namespace ComicWormCore
 
         public string Url { get; set; }
 
-        public DateTime UpdateTime { get; set; }
-
         public List<PageModel> Pages { get; set; } = new List<PageModel>();
 
-        private bool download;
+        private Database database = new Database();
         public bool Downloaded
         {
             get
             {
-                foreach(PageModel page in this.Pages)
-                {
-                    if (!page.Downloaded)
-                    {
-                        this.download = false;
-                        return this.download;
-                    }
-                }
-                this.download = false;
-                return this.download;
-            }
-            set
-            {
-                this.download = value;
+                return database.IsDownloaded(this);
             }
         }
 
-        public void AddPage(PageModel page)
-        {
-            page.Downloaded = this.download;
-            this.Pages.Add(page);
-        }
+        public string MD5 { get { return Utls.GetMD5(this.Url); } }
     }
 }

@@ -12,6 +12,15 @@ namespace ComicWormCore
 
         public string Url { get; set; }
 
-        public bool Downloaded { get; set; }
+        private Database database = new Database();
+        public bool Downloaded
+        {
+            get
+            {
+                return database.IsDownloaded(this);
+            }
+        }
+
+        public string MD5 { get { return Utls.GetMD5(this.Url); } }
     }
 }
