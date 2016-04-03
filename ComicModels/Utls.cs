@@ -5,7 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ComicWormCore
+namespace ComicModels
 {
     public static class Utls
     {

@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // 有关程序集的一般信息由以下
 // 控制。更改这些特性值可修改
 // 与程序集关联的信息。
-[assembly: AssemblyTitle("AnalysisPluginModel")]
+[assembly: AssemblyTitle("AnalysisModels")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("AnalysisPluginModel")]
+[assembly: AssemblyProduct("AnalysisModels")]
 [assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // 如果此项目向 COM 公开，则下列 GUID 用于类型库的 ID
-[assembly: Guid("0b1a1261-6fd5-4152-9b1a-d732e1a1c23c")]
+[assembly: Guid("429bafc8-f897-40e7-ae62-296e2945354e")]
 
 // 程序集的版本信息由下列四个值组成: 
 //

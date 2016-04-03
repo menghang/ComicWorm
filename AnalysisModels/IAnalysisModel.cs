@@ -4,10 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ComicWormCore
+namespace AnalysisModels
 {
     public interface IAnalysisModel
     {
-        Tuple<string, DownloadModel.AnalysisChapterHandler, DownloadModel.AnalysisPageHandler> GetAnalysisModel();
+        Tuple<string,AnalysisChapterHandler, AnalysisPageHandler> GetAnalysisModel();
+
+        string GetWebset();
     }
 }

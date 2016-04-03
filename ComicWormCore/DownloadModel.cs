@@ -1,16 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
+using System.Reflection;
 using System.Threading.Tasks;
+using AnalysisModels;
+using ComicModels;
 using HtmlAgilityPack;
 
 namespace ComicWormCore
 {
-    public class DownloadModel
+    public class DownloadModel: IEquatable<DownloadModel>
     {
         private static object LockLog = new object();
         private static object LockLogFile = new object();
@@ -22,23 +22,59 @@ namespace ComicWormCore
         private static readonly int RetryTimes = 5;
 
         public ComicModel Comic { get; set; }
+        public IAnalysisModel AnalysisModel { get; private set; }
         private Database database { get; }
 
-        public DownloadModel(string _name, string _url)
+        public DownloadModel(ComicModel _comic)
         {
-            this.Comic = new ComicModel();
-            this.Comic.Name = _name;
-            this.Comic.Url = _url;
+            this.Comic = _comic;
             this.database = new Database();
+            if (!SetAnalysisModel(GetWebset(this.Comic.Url)))
+            {
+                Log("找不到对应的解析模型，名称["+this.Comic.Name+"]，URL地址[" + this.Comic.Url + "]");
+                throw new NoAnalysisModelException();
+            }
         }
 
-        public async Task UpdateComicAsync()
+        public class NoAnalysisModelException : ApplicationException { }
+
+        private string GetWebset(string _url)
         {
-            await GetChapters();
-            await GetPages();
+            string str;
+            if (_url.StartsWith("http://"))
+            {
+                str = _url.Remove(0,"http://".Length);
+            }
+            else if (_url.StartsWith("https://"))
+            {
+                str = _url.Remove(0,"https://".Length);
+            }
+            else
+            {
+                str = _url;
+            }
+
+            return (str.Split('/'))[0];
         }
 
-        private async Task GetChapters()
+        private bool SetAnalysisModel(string _webset)
+        {
+            foreach( Type t in Assembly.Load(nameof(AnalysisModels)).GetTypes())
+            {
+                if (t.GetInterface(nameof(IAnalysisModel)) != null)
+                {
+                    IAnalysisModel iam = Activator.CreateInstance(t) as IAnalysisModel;
+                    if (iam.GetWebset().Equals(_webset))
+                    {
+                        this.AnalysisModel = iam;
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        public async Task<DownloadModel> GetChaptersAsync()
         {
             using (HttpClient httpClient = new HttpClient())
             {
@@ -56,7 +92,13 @@ namespace ComicWormCore
                         HtmlDocument htmlDoc = new HtmlDocument();
                         htmlDoc.Load(stream, true);
 
-                        AnalysisChapter(htmlDoc, this.Comic);
+                        AnalysisModel.GetAnalysisModel().Item2(htmlDoc, this.Comic);
+
+                        foreach(ChapterModel chapter in this.Comic.Chapters)
+                        {
+                            chapter.Downloaded = this.database.IsDownloaded(chapter);
+                            chapter.Selected = !chapter.Downloaded;
+                        }
 
                         Log("获取[" + this.Comic.Name + "]章节信息成功");
 
@@ -79,15 +121,14 @@ namespace ComicWormCore
                         Log("超过最大重试次数，URL地址[" + this.Comic.Url + "]");
                         break;
                     }
+
+                    Log("发生错误，等待" + RetryWaitTime + "s后重试");
+                    await Task.Delay(TimeSpan.FromSeconds(RetryWaitTime));
                 }
-
-                Log("发生错误，等待" + RetryWaitTime + "s后重试");
-                await Task.Delay(TimeSpan.FromSeconds(RetryWaitTime));
             }
-        }
 
-        public delegate void AnalysisChapterHandler(HtmlDocument htmlDoc, ComicModel comic);
-        public event AnalysisChapterHandler AnalysisChapter;
+            return this;
+        }
 
         private async void DumpToFile(Stream s, string url)
         {
@@ -104,10 +145,12 @@ namespace ComicWormCore
                 swDump = new StreamWriter(Path.Combine(path, Utls.GetMD5(fileName) + ".dump"));
                 s.CopyTo(swDump.BaseStream);
                 await swDump.FlushAsync();
+                swDump.Close();
 
                 swLog = new StreamWriter(Path.Combine(path, Utls.GetMD5(fileName) + ".log"));
                 await swLog.WriteLineAsync(url);
                 await swLog.FlushAsync();
+                swLog.Close();
 
                 Log("已保存[" + Path.Combine(path, Utls.GetMD5(fileName) + ".dump") + "]");
             }
@@ -123,10 +166,15 @@ namespace ComicWormCore
             }
         }
 
-        private async Task GetPages()
+        public async Task<DownloadModel> GetPagesAsync()
         {
             foreach (ChapterModel chapter in this.Comic.Chapters)
             {
+                if (!chapter.Selected)
+                {
+                    Log("跳过获取[" + chapter.Name + "]页面信息，URL地址[" + chapter.Url + "]");
+                    continue;
+                }
                 using (HttpClient httpClient = new HttpClient())
                 {
                     httpClient.Timeout = TimeSpan.FromSeconds(DownloadTimeOut);
@@ -144,7 +192,13 @@ namespace ComicWormCore
                             HtmlDocument htmlDoc = new HtmlDocument();
                             htmlDoc.Load(stream, true);
 
-                            AnalysisPage(htmlDoc, chapter);
+                            AnalysisModel.GetAnalysisModel().Item3(htmlDoc, chapter);
+
+                            foreach(PageModel page in chapter.Pages)
+                            {
+                                page.Downloaded = this.database.IsDownloaded(page);
+                                page.Selected = true;
+                            }
 
                             Log("获取[" + chapter.Name + "]页面信息成功");
 
@@ -170,27 +224,26 @@ namespace ComicWormCore
                     }
                 }
             }
+
+            return this;
         }
 
-        public delegate void AnalysisPageHandler(HtmlDocument htmlDoc, ChapterModel chapter);
-        public event AnalysisPageHandler AnalysisPage;
-
-        public async Task DownloadComicAsync()
+        public async Task<DownloadModel> DownloadComicAsync()
         {
             foreach (ChapterModel chapter in this.Comic.Chapters)
             {
-                if (chapter.Downloaded)
+                if (!chapter.Selected)
                 {
-                    Log("已获取[" + chapter.Name + "]，跳过获取");
+                    Log("跳过获取[" + chapter.Name + "]，URL地址[" + chapter.Url + "]");
                     continue;
                 }
 
-                bool flag = true;
+                bool successfulDownloaded = true;
                 foreach (PageModel page in chapter.Pages)
                 {
-                    if (page.Downloaded)
+                    if (!page.Selected)
                     {
-                        Log("已获取[" + chapter.Name + "]，第[" + page.Number + "]页，跳过获取");
+                        Log("跳过获取[" + chapter.Name + "]，第[" + page.Number + "]页，URL地址[" + page.Url + "]");
                         continue;
                     }
 
@@ -207,20 +260,24 @@ namespace ComicWormCore
                                 Log("开始获取[" + chapter.Name + "]，第[" + page.Number + "]页，URL地址[" + page.Url + "]");
 
                                 byte[] picData = await httpClient.GetByteArrayAsync(page.Url).ConfigureAwait(false);
-                                string comicName = this.Comic.Name + "_" + this.Comic.MD5;
+                                string comicName = this.Comic.Name + "_" + this.Comic.Hash;
                                 string chapterName = chapter.Number.ToString("D3") + "_" + chapter.Name;
                                 string path = Path.Combine(Environment.CurrentDirectory, "comic", comicName, chapterName);
                                 if (!Directory.Exists(path))
                                 {
                                     Directory.CreateDirectory(path);
                                 }
-                                using (FileStream fileStream = new FileStream(Path.Combine(path, page.Number + ".jpg"), FileMode.Create))
+                                using (FileStream fileStream = new FileStream(Path.Combine(path, page.Number.ToString("D3") + ".jpg"), FileMode.Create))
                                 {
                                     await fileStream.WriteAsync(picData, 0, picData.Length);
                                     await fileStream.FlushAsync();
                                 }
 
-                                this.database.AddPage(page, this.Comic.MD5, chapter.MD5);
+                                if (!this.database.IsDownloaded(page))
+                                {
+                                    this.database.AddPage(page, this.Comic.Hash, chapter.Hash);
+                                    page.Downloaded = true;
+                                }
 
                                 Log("获取[" + chapter.Name + "]，第[" + page.Number + "]页成功");
 
@@ -231,12 +288,12 @@ namespace ComicWormCore
                             catch (Exception e)
                             {
                                 Log(e);
-                                Log("获取[" + chapter.Name + "]，第[" + page.Number + "]页成功，URL地址[" + page.Url + "]");
+                                Log("获取[" + chapter.Name + "]，第[" + page.Number + "]页失败，URL地址[" + page.Url + "]");
                             }
 
                             if (counter > RetryTimes)
                             {
-                                flag = false;
+                                successfulDownloaded = false;
                                 Log("超过最大重试次数，URL地址[" + page.Url + "]");
                                 break;
                             }
@@ -245,12 +302,15 @@ namespace ComicWormCore
                             await Task.Delay(TimeSpan.FromSeconds(RetryWaitTime));
                         }
                     }
-                    if (flag)
-                    {
-                        database.AddChapter(chapter, this.Comic.Url);
-                    }
+                }
+                if (successfulDownloaded&&!chapter.Downloaded)
+                {
+                    database.AddChapter(chapter, this.Comic.Url);
+                    chapter.Downloaded = true;
                 }
             }
+
+            return this;
         }
 
         private void Log(Exception e)
@@ -262,6 +322,7 @@ namespace ComicWormCore
                 Console.WriteLine(log);
                 LogToFile(log);
                 Console.WriteLine(e.ToString());
+                LogToFile(e.ToString());
             }
         }
 
@@ -270,7 +331,9 @@ namespace ComicWormCore
             lock (LockLog)
             {
                 string name = (new StackTrace()).GetFrame(1).GetMethod().ReflectedType.Name;
-                Console.WriteLine(DateTime.Now.ToString("G") + " [" + name + "]" + str);
+                string str2 = DateTime.Now.ToString("G") + " [" + name + "]" + str;
+                Console.WriteLine(str2);
+                LogToFile(str2);
             }
         }
 
@@ -285,9 +348,10 @@ namespace ComicWormCore
                     Directory.CreateDirectory(logPath);
                 }
 
-                sw = new StreamWriter(Path.Combine(logPath, DateTime.Now.ToLongDateString() + ".log"), true);
-                sw.WriteLine();
+                sw = new StreamWriter(Path.Combine(logPath, DateTime.Now.ToString("yyyy-MM-dd") + ".log"), true);
+                sw.WriteLine(str);
                 sw.Flush();
+                sw.Close();
             }
             catch
             {
@@ -298,6 +362,16 @@ namespace ComicWormCore
             {
                 sw.Dispose();
             }
+        }
+
+        public bool Equals(DownloadModel other)
+        {
+            return this.Comic.Equals(other.Comic);
+        }
+
+        public bool IsSameWebset(DownloadModel other)
+        {
+            return this.AnalysisModel.GetWebset().Equals(other.AnalysisModel.GetWebset());
         }
     }
 }
