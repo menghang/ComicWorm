@@ -1,6 +1,7 @@
-﻿using HtmlAgilityPack;
+﻿using System.Collections.Generic;
+using HtmlAgilityPack;
 
 namespace ComicWorm
 {
-    public delegate void AnalysisChapterHandler(HtmlDocument htmlDoc, ComicModel comic);
+    public delegate List<Chapter> AnalysisChapterHandler(HtmlDocument htmlDoc, Comic comic);
 }

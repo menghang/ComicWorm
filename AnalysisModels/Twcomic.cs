@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using ComicWorm;
 using HtmlAgilityPack;
@@ -18,23 +19,26 @@ namespace AnalysisModels
             return "www.twcomic.com";
         }
 
-        private void AnalysisChapter(HtmlDocument htmlDoc, ComicModel comic)
+        private List<Chapter> AnalysisChapter(HtmlDocument htmlDoc, Comic comic)
         {
+            List<Chapter> chapters = new List<Chapter>();
             HtmlNodeCollection htmlNodeCollection = htmlDoc.DocumentNode.SelectNodes("//div[@class='cVol']/div[@class='cVolList']/div");
             for (int ii = 0; ii < htmlNodeCollection.Count; ii++)
             {
                 HtmlNode childNode = htmlNodeCollection[ii].FirstChild;
-                ChapterModel chapter = new ChapterModel();
+                Chapter chapter = new Chapter();
                 chapter.Name = childNode.InnerText;
                 chapter.Number = htmlNodeCollection.Count - ii;
                 //chapter.UpdateTime = childNode.GetAttributeValue("title", "");
                 chapter.Url = childNode.GetAttributeValue("href", "");
-                comic.Chapters.Add(chapter);
+                chapters.Add(chapter);
             }
+            return chapters;
         }
 
-        private void AnalysisPage(HtmlDocument htmlDoc, ChapterModel chapter)
+        private List<Page> AnalysisPage(HtmlDocument htmlDoc, Chapter chapter)
         {
+            List<Page> pages = new List<Page>();
             HtmlNodeCollection htmlNodeCollection = htmlDoc.DocumentNode.SelectNodes("//script");
             foreach (HtmlNode hn in htmlNodeCollection)
             {
@@ -50,15 +54,17 @@ namespace AnalysisModels
                 MatchCollection mc = regex.Matches(hn.InnerText);
                 for (int ii = 0; ii < mc.Count; ii++)
                 {
-                    PageModel page = new PageModel();
+                    Page page = new Page();
                     page.Number = ii + 1;
                     Regex regex2 = new Regex(@"/ok-comic[0-9][0-9]/");
                     MatchCollection mc2 = regex2.Matches(mc[ii].Value);
                     string header = mc2[0].Value.Replace("/ok-comic", "").Replace("/", "");
                     page.Url = "http://cao.twcomic.com/dm" + header + mc[ii].Value;
-                    chapter.Pages.Add(page);
+                    pages.Add(page);
                 }
+                break;
             }
+            return pages;
         }
     }
 }

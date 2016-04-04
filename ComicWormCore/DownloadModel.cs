@@ -1,9 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
 using System.Reflection;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 
@@ -92,12 +92,14 @@ namespace ComicWorm
                         HtmlDocument htmlDoc = new HtmlDocument();
                         htmlDoc.Load(stream, true);
 
-                        AnalysisModel.GetAnalysisModel().Item2(htmlDoc, this.Comic);
+                        List<Chapter> tmpChapters=AnalysisModel.GetAnalysisModel().Item2(htmlDoc, this.Comic);
 
-                        foreach (ChapterModel chapter in this.Comic.Chapters)
+                        foreach (Chapter tmpChapter in tmpChapters)
                         {
+                            ChapterModel chapter = new ChapterModel(tmpChapter);
                             chapter.Downloaded = this.database.IsDownloaded(chapter);
                             chapter.Selected = !chapter.Downloaded;
+                            this.Comic.Chapters.Add(chapter);
                         }
 
                         Log("获取[" + this.Comic.Name + "]章节信息成功");
@@ -142,17 +144,17 @@ namespace ComicWorm
                 }
 
                 string fileName = DateTime.Now.ToString("G") + " " + url;
-                swDump = new StreamWriter(Path.Combine(path, GetMD5(fileName) + ".dump"));
+                swDump = new StreamWriter(Path.Combine(path, Utls.GetMD5(fileName) + ".dump"));
                 s.CopyTo(swDump.BaseStream);
                 await swDump.FlushAsync();
                 swDump.Close();
 
-                swLog = new StreamWriter(Path.Combine(path, GetMD5(fileName) + ".log"));
+                swLog = new StreamWriter(Path.Combine(path, Utls.GetMD5(fileName) + ".log"));
                 await swLog.WriteLineAsync(url);
                 await swLog.FlushAsync();
                 swLog.Close();
 
-                Log("已保存[" + Path.Combine(path, GetMD5(fileName) + ".dump") + "]");
+                Log("已保存[" + Path.Combine(path, Utls.GetMD5(fileName) + ".dump") + "]");
             }
             catch (Exception e)
             {
@@ -193,12 +195,14 @@ namespace ComicWorm
                             HtmlDocument htmlDoc = new HtmlDocument();
                             htmlDoc.Load(stream, true);
 
-                            AnalysisModel.GetAnalysisModel().Item3(htmlDoc, chapter);
+                            List<Page> tmpPages=AnalysisModel.GetAnalysisModel().Item3(htmlDoc, chapter);
 
-                            foreach (PageModel page in chapter.Pages)
+                            foreach (Page tmpPage in tmpPages)
                             {
+                                PageModel page = new PageModel(tmpPage);
                                 page.Downloaded = this.database.IsDownloaded(page);
                                 page.Selected = true;
+                                chapter.Pages.Add(page);
                             }
 
                             Log("获取[" + chapter.Name + "]页面信息成功");
@@ -373,20 +377,6 @@ namespace ComicWorm
         public bool IsSameWebset(DownloadModel other)
         {
             return this.AnalysisModel.GetWebset().Equals(other.AnalysisModel.GetWebset());
-        }
-
-        private string GetMD5(string source)
-        {
-            MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider();
-            byte[] byteValue = System.Text.Encoding.UTF8.GetBytes(source);
-            byte[] byteHash = md5.ComputeHash(byteValue);
-            md5.Clear();
-            string sTemp = "";
-            for (int i = 0; i < byteHash.Length; i++)
-            {
-                sTemp += byteHash[i].ToString("X").PadLeft(2, '0');
-            }
-            return sTemp.ToLower();
         }
     }
 }

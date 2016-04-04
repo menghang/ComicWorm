@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using ComicWorm;
 using HtmlAgilityPack;
 
@@ -17,14 +18,14 @@ namespace AnalysisModels
             return "www.hanhan88.com";
         }
 
-        private void AnalysisChapter(HtmlDocument htmlDoc, ComicModel comic)
+        private List<Chapter> AnalysisChapter(HtmlDocument htmlDoc, Comic comic)
         {
-
+            return null;
         }
 
-        private void AnalysisPage(HtmlDocument htmlDoc, ChapterModel chapter)
+        private List<Page> AnalysisPage(HtmlDocument htmlDoc, Chapter chapter)
         {
-
+            return null;
         }
     }
 }

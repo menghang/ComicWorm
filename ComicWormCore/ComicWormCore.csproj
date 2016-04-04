@@ -53,10 +53,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ChapterModel.cs" />
+    <Compile Include="ComicModel.cs" />
     <Compile Include="Database.cs" />
     <Compile Include="DownloadModel.cs" />
     <Compile Include="DownloadTaskManager.cs" />
+    <Compile Include="PageModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utls.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

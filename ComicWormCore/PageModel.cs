@@ -3,17 +3,25 @@ using System.ComponentModel;
 
 namespace ComicWorm
 {
-    public class PageModel : INotifyPropertyChanged, IEquatable<PageModel>
+    public class PageModel :Page, INotifyPropertyChanged, IEquatable<PageModel>
     {
-        public int number;
-        public int Number
+        public PageModel() : base()
+        {            
+        }
+
+        public PageModel(Page _page)
+        {
+            this.Number = _page.Number;
+            this.Url = _page.Url;
+        }
+
+        public override int Number
         {
             get { return this.number; }
             set { this.number = value; RaisePropertyChanged(nameof(Number)); }
         }
-
-        private string url;
-        public string Url
+        
+        public override string Url
         {
             get { return this.url; }
             set { this.url = value; RaisePropertyChanged(nameof(Url)); }

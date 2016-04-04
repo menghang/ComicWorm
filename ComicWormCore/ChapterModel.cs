@@ -4,17 +4,28 @@ using System.ComponentModel;
 
 namespace ComicWorm
 {
-    public class ChapterModel : INotifyPropertyChanged, IEquatable<ChapterModel>
+    public class ChapterModel : Chapter, INotifyPropertyChanged, IEquatable<ChapterModel>
     {
-        private int number;
-        public int Number
+        public ChapterModel() : base()
+        {
+            this.pages = new List<PageModel>();
+        }
+
+        public ChapterModel(Chapter _chapter)
+        {
+            this.Number = _chapter.Number;
+            this.Name = _chapter.Name;
+            this.Url = _chapter.Url;
+            this.pages = new List<PageModel>();
+        }
+
+        public override int Number
         {
             get { return this.number; }
             set { this.number = value; RaisePropertyChanged(nameof(Number)); }
         }
 
-        private string name;
-        public string Name
+        public override string Name
         {
             get { return this.name; }
             set
@@ -25,14 +36,18 @@ namespace ComicWorm
             }
         }
 
-        private string url;
-        public string Url
+        public override string Url
         {
             get { return this.url; }
             set { this.url = value; RaisePropertyChanged(nameof(Url)); }
         }
 
-        public List<PageModel> Pages { get; set; } = new List<PageModel>();
+        private List<PageModel> pages;
+        public List<PageModel> Pages
+        {
+            get { return this.pages; }
+            set { this.pages = value; }
+        }
 
         private bool downloaded;
         public bool Downloaded

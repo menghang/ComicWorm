@@ -4,10 +4,21 @@ using System.ComponentModel;
 
 namespace ComicWorm
 {
-    public class ComicModel : INotifyPropertyChanged, IEquatable<ComicModel>
+    public class ComicModel : Comic, INotifyPropertyChanged, IEquatable<ComicModel>
     {
-        private string name;
-        public string Name
+        public ComicModel() : base()
+        {
+            this.chapters = new List<ChapterModel>();
+        }
+
+        public ComicModel(Comic _comic)
+        {
+            this.Name = _comic.Name;
+            this.Url = _comic.Url;
+            this.chapters= new List<ChapterModel>();
+        }
+
+        public override string Name
         {
             get { return this.name; }
             set
@@ -18,8 +29,7 @@ namespace ComicWorm
             }
         }
 
-        private string url;
-        public string Url
+        public override string Url
         {
             get { return this.url; }
             set
@@ -38,7 +48,12 @@ namespace ComicWorm
 
         public string Hash { get { return Utls.GetMD5(this.Url); } }
 
-        public List<ChapterModel> Chapters { get; set; } = new List<ChapterModel>();
+        private List<ChapterModel> chapters;
+        public List<ChapterModel> Chapters
+        {
+            get { return this.chapters; }
+            set { this.chapters = value; }
+        }
 
         private bool selected;
         public bool Selected
