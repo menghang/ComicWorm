@@ -10,6 +10,7 @@ namespace ComicWorm
     public class RedirectedTextWriter : TextWriter
     {
         private  MainWindowViewModel view;
+        private string buffer="";
         public RedirectedTextWriter(MainWindowViewModel _view)
         {
             this.view = _view;
@@ -17,7 +18,12 @@ namespace ComicWorm
 
         public override void Write(char value)
         {
-            this.view.Log += value;
+            this.buffer += value;
+            if (buffer.EndsWith(Environment.NewLine))
+            {
+                this.view.Log += buffer;
+                buffer = "";
+            }
         }
 
         public override void Write(string value)
