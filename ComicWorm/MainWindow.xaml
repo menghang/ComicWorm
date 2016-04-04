@@ -16,8 +16,8 @@
     MinHeight="480">
     <UniformGrid
         Margin="5"
-        Rows="1"
-        Columns="4">
+        Rows="2"
+        Columns="2">
         <DataGrid
             Margin="5"
             BorderThickness="1"
