@@ -87,6 +87,7 @@ namespace ComicWormCore
                     Stream stream = null;
                     try
                     {
+                        this.Comic.Chapters.Clear();
                         Log("开始获取[" + this.Comic.Name + "]章节信息，URL地址[" + this.Comic.Url + "]");
                         stream = await httpClient.GetStreamAsync(this.Comic.Url).ConfigureAwait(false);
                         HtmlDocument htmlDoc = new HtmlDocument();
@@ -187,8 +188,9 @@ namespace ComicWormCore
                         try
                         {
                             Log("开始获取[" + chapter.Name + "]页面信息，URL地址[" + chapter.Url + "]");
-                            stream = await httpClient.GetStreamAsync(chapter.Url).ConfigureAwait(false);
+                            chapter.Pages.Clear();
 
+                            stream = await httpClient.GetStreamAsync(chapter.Url).ConfigureAwait(false);
                             HtmlDocument htmlDoc = new HtmlDocument();
                             htmlDoc.Load(stream, true);
 
