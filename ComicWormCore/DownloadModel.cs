@@ -172,7 +172,7 @@ namespace ComicWormCore
             {
                 if (!chapter.Selected)
                 {
-                    Log("跳过获取[" + chapter.Name + "]页面信息，URL地址[" + chapter.Url + "]");
+                    //Log("跳过获取[" + chapter.Name + "]页面信息，URL地址[" + chapter.Url + "]");
                     continue;
                 }
                 using (HttpClient httpClient = new HttpClient())
@@ -234,7 +234,7 @@ namespace ComicWormCore
             {
                 if (!chapter.Selected)
                 {
-                    Log("跳过获取[" + chapter.Name + "]，URL地址[" + chapter.Url + "]");
+                    //Log("跳过获取[" + chapter.Name + "]，URL地址[" + chapter.Url + "]");
                     continue;
                 }
 
@@ -243,7 +243,7 @@ namespace ComicWormCore
                 {
                     if (!page.Selected)
                     {
-                        Log("跳过获取[" + chapter.Name + "]，第[" + page.Number + "]页，URL地址[" + page.Url + "]");
+                        //Log("跳过获取[" + chapter.Name + "]，第[" + page.Number + "]页，URL地址[" + page.Url + "]");
                         continue;
                     }
 
