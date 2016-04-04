@@ -22,5 +22,19 @@ namespace ComicModels
             }
             return sTemp.ToLower();
         }
+
+        public static string RemoveIllegalChar(string str)
+        {
+            string str2 = str.Replace('<', '+');
+            str2 = str2.Replace('>', '+');
+            str2 = str2.Replace('?', '+');
+            str2 = str2.Replace('\"', '+');
+            str2 = str2.Replace('*', '+');
+            str2 = str2.Replace('\\', '+');
+            str2 = str2.Replace('/', '+');
+            str2 = str2.Replace('|', '+');
+            str2 = str2.Replace(':', '+');
+            return str2;
+        }
     }
 }

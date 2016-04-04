@@ -20,7 +20,12 @@ namespace ComicModels
         public string Name
         {
             get { return this.name; }
-            set { this.name = value; RaisePropertyChanged(nameof(Name)); }
+            set
+            {
+                this.name = value;
+                this.name = Utls.RemoveIllegalChar(this.name);
+                RaisePropertyChanged(nameof(Name));
+            }
         }
 
         private string url;
