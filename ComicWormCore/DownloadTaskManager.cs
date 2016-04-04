@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using ComicWormCore;
 
 namespace ComicWorm
 {
@@ -18,8 +17,17 @@ namespace ComicWorm
             this.downloadedTasks = new List<DownloadModel>();
         }
 
-        public void AddDownloadTask(DownloadModel dm)
+        public void AddDownloadTask(ComicModel comic)
         {
+            DownloadModel dm = null;
+            try
+            {
+                dm = new DownloadModel(comic);
+            }
+            catch (DownloadModel.NoAnalysisModelException)
+            {
+                return;
+            }
             this.downloadTasks.Add(dm);
         }
 

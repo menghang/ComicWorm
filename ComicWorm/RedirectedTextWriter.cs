@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ComicWorm
 {
-    public class RedirectedTextWriter : TextWriter
+    internal class RedirectedTextWriter : TextWriter
     {
         private MainWindowViewModel view;
         private string buffer = "";

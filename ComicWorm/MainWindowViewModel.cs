@@ -1,10 +1,9 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
-using ComicModels;
 
 namespace ComicWorm
 {
-    public class MainWindowViewModel : INotifyPropertyChanged
+    internal class MainWindowViewModel : INotifyPropertyChanged
     {
         public ObservableCollection<ComicModel> Comics { get; set; }
 

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace ComicModels
+namespace ComicWorm
 {
     public class ComicModel : INotifyPropertyChanged, IEquatable<ComicModel>
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Text.RegularExpressions;
-using ComicModels;
+using ComicWorm;
 using HtmlAgilityPack;
 
 namespace AnalysisModels

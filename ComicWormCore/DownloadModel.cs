@@ -3,14 +3,13 @@ using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
 using System.Reflection;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
-using AnalysisModels;
-using ComicModels;
 using HtmlAgilityPack;
 
-namespace ComicWormCore
+namespace ComicWorm
 {
-    public class DownloadModel : IEquatable<DownloadModel>
+    internal class DownloadModel : IEquatable<DownloadModel>
     {
         private static object LockLog = new object();
         private static object LockLogFile = new object();
@@ -143,17 +142,17 @@ namespace ComicWormCore
                 }
 
                 string fileName = DateTime.Now.ToString("G") + " " + url;
-                swDump = new StreamWriter(Path.Combine(path, Utls.GetMD5(fileName) + ".dump"));
+                swDump = new StreamWriter(Path.Combine(path, GetMD5(fileName) + ".dump"));
                 s.CopyTo(swDump.BaseStream);
                 await swDump.FlushAsync();
                 swDump.Close();
 
-                swLog = new StreamWriter(Path.Combine(path, Utls.GetMD5(fileName) + ".log"));
+                swLog = new StreamWriter(Path.Combine(path, GetMD5(fileName) + ".log"));
                 await swLog.WriteLineAsync(url);
                 await swLog.FlushAsync();
                 swLog.Close();
 
-                Log("已保存[" + Path.Combine(path, Utls.GetMD5(fileName) + ".dump") + "]");
+                Log("已保存[" + Path.Combine(path, GetMD5(fileName) + ".dump") + "]");
             }
             catch (Exception e)
             {
@@ -374,6 +373,20 @@ namespace ComicWormCore
         public bool IsSameWebset(DownloadModel other)
         {
             return this.AnalysisModel.GetWebset().Equals(other.AnalysisModel.GetWebset());
+        }
+
+        private string GetMD5(string source)
+        {
+            MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider();
+            byte[] byteValue = System.Text.Encoding.UTF8.GetBytes(source);
+            byte[] byteHash = md5.ComputeHash(byteValue);
+            md5.Clear();
+            string sTemp = "";
+            for (int i = 0; i < byteHash.Length; i++)
+            {
+                sTemp += byteHash[i].ToString("X").PadLeft(2, '0');
+            }
+            return sTemp.ToLower();
         }
     }
 }

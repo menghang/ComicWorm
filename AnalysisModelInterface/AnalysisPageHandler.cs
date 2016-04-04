@@ -1,7 +1,6 @@
-﻿using ComicModels;
-using HtmlAgilityPack;
+﻿using HtmlAgilityPack;
 
-namespace AnalysisModels
+namespace ComicWorm
 {
     public delegate void AnalysisPageHandler(HtmlDocument htmlDoc, ChapterModel chapter);
 }

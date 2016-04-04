@@ -4,9 +4,8 @@ using System.Collections.ObjectModel;
 using System.Data;
 using System.Data.SQLite;
 using System.IO;
-using ComicModels;
 
-namespace ComicWormCore
+namespace ComicWorm
 {
     public class Database
     {
@@ -339,7 +338,7 @@ namespace ComicWormCore
             }
         }
 
-        public void AddChapter(ChapterModel chapter, string comic)
+        internal void AddChapter(ChapterModel chapter, string comic)
         {
             lock (LockDatabase)
             {
@@ -366,7 +365,7 @@ namespace ComicWormCore
             }
         }
 
-        public void RemoveChapter(ChapterModel chapter)
+        internal void RemoveChapter(ChapterModel chapter)
         {
             lock (LockDatabase)
             {
@@ -387,7 +386,7 @@ namespace ComicWormCore
             }
         }
 
-        public void RemoveChapterRelated(ChapterModel chapter)
+        internal void RemoveChapterRelated(ChapterModel chapter)
         {
             lock (LockDatabase)
             {
@@ -408,7 +407,7 @@ namespace ComicWormCore
             }
         }
 
-        public void AddPage(PageModel page, string comic, string chapter)
+        internal void AddPage(PageModel page, string comic, string chapter)
         {
             lock (LockDatabase)
             {
@@ -435,7 +434,7 @@ namespace ComicWormCore
             }
         }
 
-        public bool IsDownloaded(ChapterModel chapter)
+        internal bool IsDownloaded(ChapterModel chapter)
         {
             lock (LockDatabase)
             {
@@ -463,7 +462,7 @@ namespace ComicWormCore
             }
         }
 
-        public bool IsDownloaded(PageModel page)
+        internal bool IsDownloaded(PageModel page)
         {
             lock (LockDatabase)
             {

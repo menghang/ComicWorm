@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 
-namespace ComicModels
+namespace ComicWorm
 {
     public class PageModel : INotifyPropertyChanged, IEquatable<PageModel>
     {

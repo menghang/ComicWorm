@@ -3,11 +3,8 @@
 // http://sh.codeplex.com
 // Dedicated to Public Domain
 
-using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Data;
-using System.Globalization;
 
 namespace System.Data.SQLite
 {

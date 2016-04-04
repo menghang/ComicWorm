@@ -1,8 +1,8 @@
 ﻿using System.Security.Cryptography;
 
-namespace ComicModels
+namespace ComicWorm
 {
-    public static class Utls
+    internal static class Utls
     {
         public static string GetMD5(string source)
         {

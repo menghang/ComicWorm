@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
-using ComicModels;
-using ComicWormCore;
 using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
 
@@ -97,16 +95,7 @@ namespace ComicWorm
             {
                 if (comic.Selected)
                 {
-                    DownloadModel dm = null;
-                    try
-                    {
-                        dm = new DownloadModel(comic);
-                    }
-                    catch (DownloadModel.NoAnalysisModelException)
-                    {
-                        continue;
-                    }
-                    this.taskManager.AddDownloadTask(dm);
+                    this.taskManager.AddDownloadTask(comic);
                 }
             }
 

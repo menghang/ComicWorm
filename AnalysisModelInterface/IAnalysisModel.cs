@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AnalysisModels
+namespace ComicWorm
 {
     public interface IAnalysisModel
     {

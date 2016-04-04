@@ -1,5 +1,5 @@
 ﻿using System;
-using ComicModels;
+using ComicWorm;
 using HtmlAgilityPack;
 
 namespace AnalysisModels
