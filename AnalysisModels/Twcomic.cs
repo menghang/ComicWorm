@@ -9,7 +9,7 @@ using HtmlAgilityPack;
 
 namespace AnalysisModels
 {
-    public class Twcomic:IAnalysisModel
+    public class Twcomic : IAnalysisModel
     {
         public Tuple<string, AnalysisChapterHandler, AnalysisPageHandler> GetAnalysisModel()
         {
@@ -25,7 +25,7 @@ namespace AnalysisModels
         private void AnalysisChapter(HtmlDocument htmlDoc, ComicModel comic)
         {
             HtmlNodeCollection htmlNodeCollection = htmlDoc.DocumentNode.SelectNodes("//div[@class='cVol']/div[@class='cVolList']/div");
-            for(int ii=0;ii<htmlNodeCollection.Count;ii++)
+            for (int ii = 0; ii < htmlNodeCollection.Count; ii++)
             {
                 HtmlNode childNode = htmlNodeCollection[ii].FirstChild;
                 ChapterModel chapter = new ChapterModel();
@@ -55,7 +55,7 @@ namespace AnalysisModels
                 for (int ii = 0; ii < mc.Count; ii++)
                 {
                     PageModel page = new PageModel();
-                    page.Number = ii;
+                    page.Number = ii + 1;
                     Regex regex2 = new Regex(@"/ok-comic[0-9][0-9]/");
                     MatchCollection mc2 = regex2.Matches(mc[ii].Value);
                     string header = mc2[0].Value.Replace("/ok-comic", "").Replace("/", "");
