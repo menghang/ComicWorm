@@ -93,7 +93,7 @@
             <DataGrid.ContextMenu>
                 <ContextMenu>
                     <MenuItem
-                        Header="全选"
+                        Header="全部选中"
                         IsEnabled="{Binding EnableUI}"
                         Click="SelectAllChapter_Click" />
                     <Separator />
