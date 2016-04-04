@@ -165,5 +165,10 @@ namespace ComicWorm
                 }
             }
         }
+
+        private void TextBoxLog_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            (sender as TextBox).ScrollToEnd();
+        }
     }
 }

@@ -182,7 +182,8 @@
             HorizontalScrollBarVisibility="Auto"
             VerticalScrollBarVisibility="Auto"
             IsReadOnly="True"
-            IsUndoEnabled="False" />
+            IsUndoEnabled="False"
+            TextChanged="TextBoxLog_TextChanged" />
     </UniformGrid>
     <Window.Resources>
         <Dialog:CustomDialog
