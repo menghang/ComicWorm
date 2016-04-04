@@ -45,6 +45,11 @@
                         Click="DeleteComic_Click" />
                     <Separator />
                     <MenuItem
+                        Header="全部选中"
+                        IsEnabled="{Binding EnableUI}"
+                        Click="SelectAllComic_Click" />
+                    <Separator />
+                    <MenuItem
                         Header="开始获取章节信息"
                         IsEnabled="{Binding EnableUI}"
                         Click="GetChapters_Click" />

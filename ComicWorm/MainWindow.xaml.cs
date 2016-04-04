@@ -140,6 +140,14 @@ namespace ComicWorm
             }
         }
 
+        private void SelectAllComic_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (ComicModel comic in this.view.Comics)
+            {
+                comic.Selected = true;
+            }
+        }
+
         private void Comics_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             ComicModel comic = (sender as DataGrid).SelectedItem as ComicModel;
