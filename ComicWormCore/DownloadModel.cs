@@ -10,7 +10,7 @@ using HtmlAgilityPack;
 
 namespace ComicWormCore
 {
-    public class DownloadModel: IEquatable<DownloadModel>
+    public class DownloadModel : IEquatable<DownloadModel>
     {
         private static object LockLog = new object();
         private static object LockLogFile = new object();
@@ -31,7 +31,7 @@ namespace ComicWormCore
             this.database = new Database();
             if (!SetAnalysisModel(GetWebset(this.Comic.Url)))
             {
-                Log("找不到对应的解析模型，名称["+this.Comic.Name+"]，URL地址[" + this.Comic.Url + "]");
+                Log("找不到对应的解析模型，名称[" + this.Comic.Name + "]，URL地址[" + this.Comic.Url + "]");
                 throw new NoAnalysisModelException();
             }
         }
@@ -43,11 +43,11 @@ namespace ComicWormCore
             string str;
             if (_url.StartsWith("http://"))
             {
-                str = _url.Remove(0,"http://".Length);
+                str = _url.Remove(0, "http://".Length);
             }
             else if (_url.StartsWith("https://"))
             {
-                str = _url.Remove(0,"https://".Length);
+                str = _url.Remove(0, "https://".Length);
             }
             else
             {
@@ -59,7 +59,7 @@ namespace ComicWormCore
 
         private bool SetAnalysisModel(string _webset)
         {
-            foreach( Type t in Assembly.Load(nameof(AnalysisModels)).GetTypes())
+            foreach (Type t in Assembly.Load(nameof(AnalysisModels)).GetTypes())
             {
                 if (t.GetInterface(nameof(IAnalysisModel)) != null)
                 {
@@ -95,7 +95,7 @@ namespace ComicWormCore
 
                         AnalysisModel.GetAnalysisModel().Item2(htmlDoc, this.Comic);
 
-                        foreach(ChapterModel chapter in this.Comic.Chapters)
+                        foreach (ChapterModel chapter in this.Comic.Chapters)
                         {
                             chapter.Downloaded = this.database.IsDownloaded(chapter);
                             chapter.Selected = !chapter.Downloaded;
@@ -196,7 +196,7 @@ namespace ComicWormCore
 
                             AnalysisModel.GetAnalysisModel().Item3(htmlDoc, chapter);
 
-                            foreach(PageModel page in chapter.Pages)
+                            foreach (PageModel page in chapter.Pages)
                             {
                                 page.Downloaded = this.database.IsDownloaded(page);
                                 page.Selected = true;
@@ -305,7 +305,7 @@ namespace ComicWormCore
                         }
                     }
                 }
-                if (successfulDownloaded&&!chapter.Downloaded)
+                if (successfulDownloaded && !chapter.Downloaded)
                 {
                     database.AddChapter(chapter, this.Comic.Url);
                     chapter.Downloaded = true;

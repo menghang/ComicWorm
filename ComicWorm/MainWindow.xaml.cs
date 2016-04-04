@@ -134,7 +134,7 @@ namespace ComicWorm
 
         private void SelectAllChapter_Click(object sender, RoutedEventArgs e)
         {
-            foreach(ChapterModel chapter in this.view.Chapters)
+            foreach (ChapterModel chapter in this.view.Chapters)
             {
                 chapter.Selected = true;
             }
@@ -154,7 +154,7 @@ namespace ComicWorm
             if (comic != null)
             {
                 this.view.Chapters.Clear();
-                foreach(ChapterModel chapter in comic.Chapters)
+                foreach (ChapterModel chapter in comic.Chapters)
                 {
                     this.view.Chapters.Add(chapter);
                 }

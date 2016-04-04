@@ -1,16 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace ComicWorm
 {
     public class RedirectedTextWriter : TextWriter
     {
-        private  MainWindowViewModel view;
-        private string buffer="";
+        private MainWindowViewModel view;
+        private string buffer = "";
         public RedirectedTextWriter(MainWindowViewModel _view)
         {
             this.view = _view;
